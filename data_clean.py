@@ -7,6 +7,7 @@ Case 1
 import numpy as np
 import pandas as pd
 import math
+import csv
 
 class data_clean():
     """docstring for ClassName"""
@@ -62,7 +63,12 @@ class data_clean():
                 x100_one_hot[x100Dict.get(x100[i-1])] = 1
                 X_train[i-101] = np.append(x,x100_one_hot.T[0])
 
-        return X_test, Y_test, X_train
+        return self.attribute_names, X_test, Y_test, X_train
+
+    def replace_all_NaN(self, data):
+        for i, data_column in enumerate(data):
+            data[i] = self.replace_NaN_with_mean(data_column)
+        return data
 
     def replace_NaN_with_mean(self, column):
         sum_of_valid_data = 0
@@ -70,12 +76,19 @@ class data_clean():
 
         for data in column:
             if not math.isnan(data):
-                print(data)
                 sum_of_valid_data = sum_of_valid_data + data
                 count_of_valid += 1
+        mean = sum_of_valid_data/count_of_valid
+        for i, data in enumerate(column):
+            if math.isnan(data):
+                column[i] = mean
 
-        print(sum_of_valid_data)
-        print(sum_of_valid_data/count_of_valid)
+        return column
+
+    def save_data_as_csv(self, path, data):
+        np.savetxt(path, data, delimiter=",")
+
+        
 
 
 
